@@ -15,6 +15,12 @@ io.on('connection', function(client) {
         console.log(data);
         client.emit('messages', 'Hello from server');
     });
+
+  client.on('chat message', function(msg){
+    console.log(msg);
+  });
+
+
 });
 
 

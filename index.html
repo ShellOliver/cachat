@@ -3,27 +3,29 @@
     <head>
 
     </head>
+        <script src="/jquery/dist/jquery.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+    <script>  
+     $(function () {
+        // var socket = io();
+        var socket = io.connect();
+        $('form').submit(function(){
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+    });
+    </script>
+
     <body>
         <h1>Hello World!</h1>
         <div id="future"></div>
         <form id="form" id="chat_form">
-            <input id="chat_input" type="text" name="var1">
-            <input id="chat_input" type="text" name="var2">>
-            <input id="chat_input" type="text" name="var3">>
+            <input id="m" type="text" name="m">
             <input type="submit" value="Send">
         </form>
-         <script src="/jquery/dist/jquery.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
+
     </body>
 
-    <script>  
-	 var socket = io.connect('http://localhost:3001');
-	 socket.on('connect', function(data) {
-	    socket.emit('join', {name:'Hello World from client'});
-	 });
-
-	 socket.on('messages', function(data) {
-                alert(data);
-        });
-	</script>  
-</html>  
+    
+</html>

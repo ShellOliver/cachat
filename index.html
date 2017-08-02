@@ -1,31 +1,128 @@
-<!doctype html>  
-<html lang="en">  
-    <head>
+<!doctype html>
+<html lang="en">
 
-    </head>
-        <script src="/jquery/dist/jquery.js"></script>
-        <script src="/socket.io/socket.io.js"></script>
-    <script>  
-     $(function () {
-        // var socket = io();
+<head>
+
+</head>
+<script src="/jquery/dist/jquery.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    $(function () {
         var socket = io.connect();
-        $('form').submit(function(){
-          socket.emit('chat message', $('#m').val());
-          $('#m').val('');
-          return false;
+        $('#editor').keypress(function (event) {
+            if (event.which == 13) {
+                socket.emit('chat message', $('#m').val());
+                $('#m').val('');
+                socket.on('resposta', function (data) {
+                    console.log(data);
+                    $('#messages').prepend($(`
+                    <div class="media msg">
+                    <a class="pull-left" href="#">
+                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
+                    </a>
+                    <div class="media-body">
+                        <small class="pull-right time"><i class="fa fa-clock-o"></i> 12:10am</small>
+                        <h5 class="media-heading">Naimish Sakhpara</h5>
+
+                        <small class="col-lg-10">texto</small>
+                    </div>
+                </div>
+                `));
+                });
+
+                return false;
+            }
         });
     });
-    </script>
 
-    <body>
-        <h1>Hello World!</h1>
-        <div id="future"></div>
-        <form id="form" id="chat_form">
-            <input id="m" type="text" name="m">
-            <input type="submit" value="Send">
-        </form>
+</script>
 
-    </body>
+<body>
+    <!--    <div id="future"></div>
+    <input id="m" type="text" name="m">
+    <input id="send" type="submit" value="Send">-->
 
-    
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="btn-panel btn-panel-conversation">
+                    <input type="text"><i class="fa fa-search"></i>
+                </div>
+            </div>
+
+            <div class="col-lg-offset-1 col-lg-7">
+                <div class="btn-panel btn-panel-msg">
+
+                    <a href="" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears"></i> Settings</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="conversation-wrap col-lg-3">
+
+                <div class="media conversation">
+                    <a class="pull-left" href="#">
+                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 50px; height: 50px;" src="">
+                </a>
+                    <div class="media-body">
+                        <h5 class="media-heading">Naimish AQUI</h5>
+                        <small>Hello</small>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="message-wrap col-lg-8">
+                <div class="msg-wrap">
+
+
+                    <div class="media msg ">
+                        <a class="pull-left" href="#">
+                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
+                    </a>
+                        <div class="media-body">
+                            <small class="pull-right time"><i class="fa fa-clock-o"></i> 12:10am</small>
+                            <h5 class="media-heading">Naimish Sakhpara</h5>
+                            <small class="col-lg-10">SDFS SDFSDF SSDF SDF/small>
+                    </div>
+                </div>
+                <div class="alert msg-date">
+                    <strong>Today</strong>
+                </div>
+                <div id="messages">
+
+                </div>
+                <div class="media msg">
+                    <a class="pull-left" href="#">
+                        <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
+                    </a>
+                    <div class="media-body">
+                        <small class="pull-right time"><i class="fa fa-clock-o"></i> 12:10am</small>
+                            <h5 class="media-heading">Naimish Sakhpara</h5>
+
+                            <small class="col-lg-10">ASDASD"</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="send-wrap ">
+                    <form id='editor'>
+                        <textarea id="m" class="form-control send-message" rows="3"></textarea>
+                    </form>
+
+                </div>
+                <div class="btn-panel">
+                    <a href="" class=" col-lg-3 btn   send-message-btn " role="button"><i class="fa fa-cloud-upload"></i> Add Files</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

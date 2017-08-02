@@ -4,11 +4,12 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/node_modules'));  
+app.use(express.static(__dirname + '/public'));  
 app.get('/', function(req, res,next) {  
     res.sendFile(__dirname + '/index.html');
 });
 
-io.on('connection', function(client) {  
+io.on('connection', function(client) {
     console.log('Client connected...');
 
     client.on('join', function(data) {
@@ -18,6 +19,7 @@ io.on('connection', function(client) {
 
   client.on('chat message', function(msg){
     console.log(msg);
+    client.emit('resposta', 'aqui do server');    
   });
 
 

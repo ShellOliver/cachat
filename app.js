@@ -12,18 +12,11 @@ app.get('/', function(req, res,next) {
 io.on('connection', function(client) {
     console.log('Client connected...');
 
-    client.on('join', function(data) {
-        console.log(data);
-        client.emit('messages', 'Hello from server');
-    });
-
-  client.on('chat message', function(msg){
-    console.log(msg);
-    client.emit('resposta', 'aqui do server');    
+  client.on('sendForAll', function(msg){
+    client.broadcast.emit('forAll', msg);
+    client.emit('forAll', msg);
   });
 
-
 });
-
 
 server.listen(3001);

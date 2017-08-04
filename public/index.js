@@ -31,5 +31,16 @@ time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
             addMessage(data);
         });
 
+        socket.on('userEnter', function(){
+            $('#messages').append(`<div class="alert msg-date">
+                    <strong>Some one is with us..</strong>
+                </div>`);
+        });
+
+        socket.on('userOut', function(){
+            $('#messages').append(`<div class="alert msg-date">
+                    <strong>Some one is not between us..</strong>
+                </div>`);
+        });
 
     });

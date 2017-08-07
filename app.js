@@ -3,15 +3,19 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var hbs = require('express-handlebars');
+var mongoose = require('mongoose');
+var fileRoutes = require('./routes/fileRoutes');
+
+mongoose.connect('mongodb://localhost/chat');
 
 app.engine( 'hbs', hbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set( 'view engine', 'hbs' );
 
-app.use(express.static(__dirname + '/node_modules'));
-app.use(express.static(__dirname + '/public'));
+// app.use(express.static(__dirname + '/node_modules'));//to remove
+app.use('/files', fileRoutes);
 
 app.get('/', function (req, res, next) {
-    res.render('index');
+    res.render('loginRegister');
 });
 
 app.get('/chat', function (req, res, next) {
@@ -32,6 +36,5 @@ io.on('connection', function (client) {
     });
 
 });
-
 
 server.listen(3001);

@@ -5,8 +5,12 @@ var io = require('socket.io')(server);
 var hbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var fileRoutes = require('./routes/fileRoutes');
+var userRoutes = require('./routes/userRoutes');
+var bodyParser = require('body-parser');
 
 mongoose.connect('mongodb://localhost/chat');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.engine( 'hbs', hbs({extname: 'hbs', defaultLayout: 'main'}));
 app.set( 'view engine', 'hbs' );
@@ -15,8 +19,9 @@ app.set( 'view engine', 'hbs' );
 app.use('/files', fileRoutes);
 
 app.get('/', function (req, res, next) {
-    res.render('loginRegister');
+    res.render('loginRegister', {register: false});
 });
+app.use('/user', userRoutes);
 
 app.get('/chat', function (req, res, next) {
     res.sendFile(__dirname + '/index.html');

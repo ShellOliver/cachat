@@ -27,7 +27,7 @@ module.exports = {
      */
     show: function (req, res) {
         var id = req.params.id;
-        userModel.findOne({_id: id}, function (err, user) {
+        userModel.findOne({ _id: id }, function (err, user) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting user.',
@@ -47,21 +47,35 @@ module.exports = {
      * userController.create()
      */
     create: function (req, res) {
-        var user = new userModel({
-			name : req.body.name,
-			email : req.body.email,
-			password : req.body.password
-
+        var usr = {
+            name: req.body.name,
+            email: req.body.email,
+            register: true,
+            error: ''
+        }
+        var user = new userModel(req.body);
+        userModel.findOne({ email: req.body.email }, function (err, usrFound) {
+            if (usrFound) {
+                usr.error = 'Email alredy registered!';
+                return res.render('loginRegister', usr);
+            }
         });
 
         user.save(function (err, user) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when creating user',
-                    error: err
-                });
+            if (err){
+                user.error = 'Some thing were wrong :/';
+                return res.render('loginRegister', usr);
             }
-            return res.status(201).json(user);
+
+            usr.register = false;
+            usr.success = 'Good, you are registered!';
+            usr.error = '';
+            return res.render('loginRegister', 
+            {
+                loginEmail: user.email,
+                success: 'Good, you are registered!',
+                register: false
+            });
         });
     },
 
@@ -70,7 +84,7 @@ module.exports = {
      */
     update: function (req, res) {
         var id = req.params.id;
-        userModel.findOne({_id: id}, function (err, user) {
+        userModel.findOne({ _id: id }, function (err, user) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting user',
@@ -84,9 +98,9 @@ module.exports = {
             }
 
             user.name = req.body.name ? req.body.name : user.name;
-			user.email = req.body.email ? req.body.email : user.email;
-			user.password = req.body.password ? req.body.password : user.password;
-			
+            user.email = req.body.email ? req.body.email : user.email;
+            user.password = req.body.password ? req.body.password : user.password;
+
             user.save(function (err, user) {
                 if (err) {
                     return res.status(500).json({

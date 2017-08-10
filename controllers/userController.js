@@ -1,4 +1,6 @@
 var userModel = require('../models/userModel.js');
+var bcrypt = require('bcrypt');
+
 
 /**
  * userController.js
@@ -53,6 +55,7 @@ module.exports = {
             register: true,
             error: ''
         }
+        req.body.password = bcrypt.hashSync(req.body.password, 12);
         var user = new userModel(req.body);
         userModel.findOne({ email: req.body.email }, function (err, usrFound) {
             if (usrFound) {
@@ -129,4 +132,21 @@ module.exports = {
             return res.status(204).json();
         });
     }
+
+    // login: function (req, res){
+    //     userModel.findOne({ email:req.body.email }, function (err, user) {
+    //         if(user && bcrypt.compareSync(req.body.password, user.password)){
+    //             res.redirect('/chat');
+    //             return res.end();
+    //         }else{
+    //             return res.render('loginRegister', 
+    //             {
+    //                 register: false,
+    //                 loginEmail: req.body.email,
+    //                 error:'Email or password is wrong.'
+    //             });
+    //         }
+    //     });
+    // }
+
 };

@@ -4,27 +4,60 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var hbs = require('express-handlebars');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var passport = require('passport');
+var Strategy = require('passport-local').Strategy;
+
 var fileRoutes = require('./routes/fileRoutes');
 var userRoutes = require('./routes/userRoutes');
-var bodyParser = require('body-parser');
+var authController = require('./controllers/authController');
 
 mongoose.connect('mongodb://localhost/chat');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.engine( 'hbs', hbs({extname: 'hbs', defaultLayout: 'main'}));
-app.set( 'view engine', 'hbs' );
+app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main' }));
+app.set('view engine', 'hbs');
 
-// app.use(express.static(__dirname + '/node_modules'));//to remove
+passport.use(new Strategy(
+    {
+        usernameField: 'email',
+    },
+    function (email, password, done) {
+        const userModel = require('./models/userModels');
+        return userModel.findOne({ email: email }, function (err, user) {
+            if (user && !bcrypt.compareSync(password, user.password)) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            }
+        });
+    }
+));
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
 app.use('/files', fileRoutes);
+app.use('/login', authController);
 
-app.get('/', function (req, res, next) {
-    res.render('loginRegister', {register: false});
-});
-app.use('/user', userRoutes);
+//middleware
+//TO-DO
+// if auth /user/chat NEED
+// if not auth /login OK
+app.use(
+    require('connect-ensure-login').ensureLoggedIn('/login'),
+    function (req, res, next) {
+        next();
+    });
 
 app.get('/chat', function (req, res, next) {
-    res.sendFile(__dirname + '/index.html');
+    return res.render('chat');
+});
+
+app.use('/user', userRoutes);
+
+app.use('*', function (req, res) {
+    return res.redirect('/login');
 });
 
 io.on('connection', function (client) {

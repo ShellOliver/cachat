@@ -1,0 +1,60 @@
+<link href="/files/public/style/index.css" rel="stylesheet">
+<script src="/files/socket/socket.io.js"></script>
+<script src="/files/public/script/index.js"></script>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="btn-panel btn-panel-conversation">
+                <input type="text"><i class="fa fa-search"></i>
+            </div>
+        </div>
+
+        <div class="col-lg-offset-1 col-lg-7">
+            <div class="btn-panel btn-panel-msg">
+
+                <a href="" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears"></i> Settings</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="conversation-wrap col-lg-3">
+
+            <div class="media conversation">
+                <a class="pull-left" href="#">
+                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 50px; height: 50px;" src="">
+                </a>
+                <div class="media-body">
+                    <h5 class="media-heading">Some one..</h5>
+                    <small>Hello</small>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="message-wrap col-lg-8">
+            <div class="msg-wrap">
+                <div class="alert msg-date">
+                    <strong>Today</strong>
+                </div>
+
+
+
+                <ul id="messages">
+
+                </ul>
+
+            </div>
+
+            <div class="send-wrap ">
+                <form id='editor'>
+                    <textarea id="m" class="form-control send-message" rows="3"></textarea>
+                </form>
+
+            </div>
+            <div class="btn-panel">
+                <a href="" class=" col-lg-3 btn   send-message-btn " role="button"><i class="fa fa-cloud-upload"></i> Add Files</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -46,7 +46,7 @@
 									</div>
 								</div>
 							</form>
-							<form id="register-form" action="/user" method="post" role="form" style="display: none;">
+							<form id="register-form" action="/register" method="post" role="form" style="display: none;">
 								<div class="form-group">
 									<input type="text" name="name" id="username" tabindex="1" class="form-control" placeholder="Username" value="{{name}}">
 								</div>
@@ -81,7 +81,6 @@
  		$("#login-form").fadeOut(100);
 		$('#login-form-link').removeClass('active');
 		$('#register-form-link').addClass('active');
-		e.preventDefault();
 	}
 
 	function showLogin(){
@@ -89,7 +88,6 @@
  		$("#register-form").fadeOut(100);
 		$('#register-form-link').removeClass('active');
 		$('#login-form-link').addClass('active');
-		e.preventDefault();
 	}
 	$(function() {
 		

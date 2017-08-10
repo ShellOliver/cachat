@@ -6,11 +6,19 @@ var hbs = require('express-handlebars');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var passport = require('passport');
+app.use(require('express-session')({
+  secret: 'isaud$#@joisdfsdifuh#@#%@#$',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 var Strategy = require('passport-local').Strategy;
 
 var fileRoutes = require('./routes/fileRoutes');
 var userRoutes = require('./routes/userRoutes');
 var authController = require('./controllers/authController');
+var registerController = require('./controllers/registerController');
 
 mongoose.connect('mongodb://localhost/chat');
 app.use(bodyParser.json());
@@ -24,9 +32,10 @@ passport.use(new Strategy(
         usernameField: 'email',
     },
     function (email, password, done) {
-        const userModel = require('./models/userModels');
+        const userModel = require('./models/userModel');
+        const bcrypt = require('bcrypt');
         return userModel.findOne({ email: email }, function (err, user) {
-            if (user && !bcrypt.compareSync(password, user.password)) {
+            if (user && bcrypt.compareSync(password, user.password)) {
                 return done(null, user);
             } else {
                 return done(null, false);
@@ -39,12 +48,13 @@ passport.deserializeUser((user, done) => done(null, user));
 
 app.use('/files', fileRoutes);
 app.use('/login', authController);
+app.use('/register', registerController);
 
 //middleware
 //TO-DO
 // if auth /user/chat NEED
 // if not auth /login OK
-app.use(
+app.use('/',
     require('connect-ensure-login').ensureLoggedIn('/login'),
     function (req, res, next) {
         next();

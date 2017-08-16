@@ -48,15 +48,14 @@ module.exports = {
      */
     create: function (req) {
         var message = new messageModel({
+            emitter: req.emitter,
             message: req.text,
             receptor: req.receptor,
             datetime: new Date(),
             room: req.room
 
         });
-        message.save(function (err, message) {
-            return !err ? true : false;
-        });
+        return message
     },
     /**
      * messageController.update()

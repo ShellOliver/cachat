@@ -1,18 +1,15 @@
 
 function addMessage(id) {
-    dt = new Date();
-    time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
     $('#messages').append(`<div class="media msg">
                     <a class="pull-left" href="#">
                         <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 32px; height: 32px;" src="">
                     </a>
                     <div class="media-body">
-                        <small class="pull-right time"><i class="fa fa-clock-o"></i> `+ time + `</small>
+                        <small id="time`+id+`" class="pull-right time"><i class="fa fa-clock-o"></i></small>
                             <h5 class="media-heading">Some one</h5>
 
-                            <pre id="`+id+`" class="col-lg-10"></<pre>
+                            <pre id="msg`+id+`" class="col-lg-10"></pre>
                         </div>
-                        
                     </div>`);
 }
 $(function () {
@@ -29,15 +26,25 @@ $(function () {
         }
     });
 
+    socket.emit('getAllUsersIn');
+    socket.on('allUsersIn', function(data){
+        console.log(data.usersIn);
+    });
+
     socket.on('forAll', function (data) {
         id++;
         addMessage(id);
-        $('#'+id).text(data);
+        $('#msg'+id).text(data.msg);
+        dt = new Date(data.time);
+        $('#time'+id).text(dt.getHours() + ":" + dt.getMinutes()+"h");
+        boxMessages = document.querySelector('#boxMessages');
+        boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 
-    socket.on('userEnter', function (id) {
+    socket.on('userEnter', function (data) {
+        console.log(data);
         $('#messages').append(`<div class="alert msg-date">
-                    <strong>Some one is with us..</strong>
+                    <strong>`+data.user.name+` is with us...</strong>
                 </div>`);
     });
 

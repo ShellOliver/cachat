@@ -1,11 +1,12 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
-var hbs = require('express-handlebars');
-var mongoose = require('mongoose');
-var bodyParser = require('body-parser');
-var passport = require('passport');
+import express from 'express';
+const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const hbs = require('express-handlebars');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const passport = require('passport');
+const path = require('path');
 app.use(require('express-session')({
     secret: 'isaud$#@joisdfsdifuh#@#%@#$',
     resave: true,
@@ -13,19 +14,20 @@ app.use(require('express-session')({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-var Strategy = require('passport-local').Strategy;
+const Strategy = require('passport-local').Strategy;
 
-var fileRoutes = require('./routes/fileRoutes');
-var userRoutes = require('./routes/userRoutes');
-var authController = require('./controllers/authController');
-var registerController = require('./controllers/registerController');
+const fileRoutes = require('./routes/fileRoutes');
+const userRoutes = require('./routes/userRoutes');
+const authController = require('./controllers/authController');
+const registerController = require('./controllers/registerController');
 var currentUser = '';
 
 mongoose.connect('mongodb://localhost/chat');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main' }));
+app.set('views', path.join(__dirname, 'views'));
+app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main',layoutsDir: path.join(__dirname, "views/layouts") }));
 app.set('view engine', 'hbs');
 
 passport.use(new Strategy(
@@ -51,7 +53,6 @@ passport.deserializeUser((user, done) => done(null, user));
 app.use('/files', fileRoutes);
 app.use('/login', authController);
 app.use('/register', registerController);
-
 
 //middleware
 //TO-DO

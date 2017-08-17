@@ -4,7 +4,10 @@
   "description": "teste soocketio para outro projeto",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon app.js",
+    "nodemonStart": "./node_modules/.bin/nodemon ./src/app.js",
+    "start": "babel-watch -b env ./src/app.js",
+    "build": "babel src -d dist --copy-files",
+    "buildWebpack": "./node_modules/.bin/webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -29,6 +32,12 @@
     "socket.io": "^2.0.3"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-watch": "^2.0.7",
+    "nodemon": "^1.11.0",
+    "webpack": "^3.5.5",
+    "webpack-node-externals": "^1.6.0"
   }
 }

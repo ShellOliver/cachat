@@ -1,4 +1,6 @@
 import express from 'express';
+require("babel-core/register");
+require("babel-polyfill");
 const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -27,7 +29,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.set('views', path.join(__dirname, 'views'));
-app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main',layoutsDir: path.join(__dirname, "views/layouts") }));
+app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main', layoutsDir: path.join(__dirname, "views/layouts") }));
 app.set('view engine', 'hbs');
 
 passport.use(new Strategy(
@@ -72,7 +74,7 @@ app.get('/chat', function (req, res, next) {
 app.use('/user', userRoutes);
 
 app.get('/sair', function (req, res) {
-    req.session.destroy(function(err) { });
+    req.session.destroy(function (err) { });
 });
 
 app.use('*', function (req, res) {
@@ -81,56 +83,48 @@ app.use('*', function (req, res) {
 
 const messageModel = require('./controllers/messageController');
 const userModel = require('./models/userModel');
-
+const userController = require('./controllers/userController');
 
 io.engine.generateId = (req) => {
     return (currentUser != '') ? currentUser._id : /=.+;/g.exec(req.headers.cookie)[0]; // custom id must be unique
 }
 
-io.on('connection', function (client) {
-    /* io.of('/chat').clients((error, clients) => {
-        if (error) throw error;
-        client.broadcast.emit('userEnter', { clients: clients });   
-      }); */
-      client.on('getAllUsersIn', function (req) {
-        var usersIn = [];
-        io.clients((error, clients) => {
+io.on('connection', async function (client) {
+    var usersIn = [];
+    client.on('getAllUsersIn', async function (req) {
+        io.clients(async (error, clients) => {
             if (error) throw error;
-            //clients.forEach(function(usrId, index) {
-                for(var i = 0;i < clients.length; i++){
-                    userModel.findOne({ _id: clients[i] }, function (err, user) {})
-                    .then((usr) => {
-                        usr.email = undefined; usr.password = undefined; usr.__v=undefined;
-                        usersIn.push(usr);
-                        console.log('at persistence: ',usersIn);
-                    });
+            for (let i = 0; i < clients.length && currentUser._id != clients[i]; i++) {
+                try{
+                    usersIn.push(await userController.getUser(clients[i]));
+                }catch(ex){
+                    console.log("can't find user id:", client.id); 
                 }
-
-                    console.log('no fim caraio', usersIn);
-                    client.emit('allUsersIn', { usersIn: usersIn });
-/*                     console.log('fim: ',usersIn);
-
-                    client.emit('allUsersIn', { usersIn: usersIn }); */
-              //});
-              
-            }, this);
-      });
+            }
+            client.emit('allUsersIn', { usersIn: usersIn });
+        }, this);
+    });
     
-    console.log('Client connected...', client.id);
+    try{
+        let usr = (currentUser._id != client.id) ? await userController.getUser(client.id) : null;
+        console.log('Client connected...', usr);
+        client.emit('newUserIn', usr);
+    }catch(ex){
+        console.log("can't find user id:", client.id);
+    }
 
-    client.on('sendForAll', function (req) {
+    client.on('sendForAll', (req) => {
         //save message here
-        if(req.text.trim() == ''){
+        if (req.text.trim() == '') {
             return;
         }
         req.receptor = 0;//in future a list of all client ids conected in the same room
         req.emitter = currentUser._id;
         messageModel.create(req).save(function (err, m) {
-            msgData = {'msg': m.message, 'time':m.datetime};
+            let msgData = { 'msg': m.message, 'time': m.datetime };
             client.broadcast.emit('forAll', msgData);
             client.emit('forAll', msgData);
         });
-        
     });
 
     client.on('disconnect', (reason) => {

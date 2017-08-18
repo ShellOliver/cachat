@@ -1,7 +1,6 @@
 var userModel = require('../models/userModel.js');
 var bcrypt = require('bcrypt');
 
-
 /**
  * userController.js
  *
@@ -43,6 +42,15 @@ module.exports = {
             }
             return res.json(user);
         });
+    },
+
+    async getUser(id){
+        let usr = await userModel.findOne({ _id: id }, function (err, user) { });
+        if (usr) {
+            usr.email = undefined; usr.password = undefined; usr.__v = undefined;
+            return usr;
+        }
+        return null;
     },
 
     /**

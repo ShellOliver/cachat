@@ -28,7 +28,11 @@ $(function () {
 
     socket.emit('getAllUsersIn');
     socket.on('allUsersIn', function(data){
-        console.log(data.usersIn);
+        console.log('usersIN: ',data.usersIn);
+    });
+
+    socket.on('newUserIn', function(data){
+        console.log('mais um logado: ',data);
     });
 
     socket.on('forAll', function (data) {

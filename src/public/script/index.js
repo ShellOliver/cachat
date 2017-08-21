@@ -28,11 +28,16 @@ $(function () {
 
     socket.emit('getAllUsersIn');
     socket.on('allUsersIn', function(data){
-        console.log('usersIN: ',data.usersIn);
+        console.log('usersIn: ',data.usersIn);//return a array of objects
+    });
+
+    socket.emit('getAllOldMessages');
+    socket.on('allOldMessages', function(data){
+        console.log('allMessages: ',data);//return a array of objects
     });
 
     socket.on('newUserIn', function(data){
-        console.log('mais um logado: ',data);
+        console.log('another: ',data);//return a object
     });
 
     socket.on('forAll', function (data) {

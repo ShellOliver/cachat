@@ -10,16 +10,8 @@ module.exports = {
     /**
      * messageController.list()
      */
-    list: function (req, res) {
-        messageModel.find(function (err, messages) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting message.',
-                    error: err
-                });
-            }
-            return res.json(messages);
-        });
+    list: function () {
+        return messageModel.find();
     },
 
     /**

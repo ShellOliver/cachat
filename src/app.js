@@ -63,11 +63,11 @@ app.use('/register', registerController);
 app.use('/',
     require('connect-ensure-login').ensureLoggedIn('/login'),
     function (req, res, next) {
+        currentUser = req.user;
         next();
     });
 
 app.get('/chat', function (req, res, next) {
-    currentUser = req.user;
     return res.render('chat');
 });
 
@@ -81,7 +81,7 @@ app.use('*', function (req, res) {
     return res.redirect('/login');
 });
 
-const messageModel = require('./controllers/messageController');
+const messageController = require('./controllers/messageController');
 const userModel = require('./models/userModel');
 const userController = require('./controllers/userController');
 
@@ -106,9 +106,9 @@ io.on('connection', async function (client) {
     });
     
     try{
-        let usr = (currentUser._id != client.id) ? await userController.getUser(client.id) : null;
+        let usr = await userController.getUser(client.id);
         console.log('Client connected...', usr);
-        client.emit('newUserIn', usr);
+        client.broadcast.emit('newUserIn', usr);
     }catch(ex){
         console.log("can't find user id:", client.id);
     }
@@ -120,7 +120,7 @@ io.on('connection', async function (client) {
         }
         req.receptor = 0;//in future a list of all client ids conected in the same room
         req.emitter = currentUser._id;
-        messageModel.create(req).save(function (err, m) {
+        messageController.create(req).save(function (err, m) {
             let msgData = { 'msg': m.message, 'time': m.datetime };
             client.broadcast.emit('forAll', msgData);
             client.emit('forAll', msgData);
@@ -130,6 +130,14 @@ io.on('connection', async function (client) {
     client.on('disconnect', (reason) => {
         client.broadcast.emit('userOut');
     });
+
+    client.on('getAllOldMessages', async () =>{
+        //search all messages size create date of this user
+        //need to get least 100 recent messages
+        //another call based on scroll get others 100 messages
+        const messages = await messageController.list();
+        client.emit('allOldMessages', messages);
+    })
 });
 
 server.listen(3001);

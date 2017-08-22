@@ -11,7 +11,8 @@ module.exports = {
      * messageController.list()
      */
     list: function () {
-        return messageModel.find();
+        console.log('chamou no mongo');
+        return messageModel.find().limit(100);
     },
 
     /**

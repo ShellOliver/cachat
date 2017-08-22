@@ -16,6 +16,8 @@ $(function () {
     var id = 0;
     var socket = io.connect();
     var shift = false;
+    var boxMessages = document.querySelector('#boxMessages');
+
     $('#editor').keydown(function (event) { if (event.which == 16) shift = true });
     $('#editor').keyup(function (event) { if (event.which == 16) shift = false });
     $('#editor').keypress(function (event) {
@@ -26,15 +28,27 @@ $(function () {
         }
     });
 
+    function getMessages(){
+        socket.emit('getOldMessages');
+    }
+
+    getMessages();
+
+    boxMessages.onscroll=function(){
+        if(boxMessages.scrollTop == 0){
+            getMessages();
+        }
+    }
+    
+    socket.on('oldMessages', function(data){
+        console.log('Messages: ',data);//return a array of objects
+    });
+
     socket.emit('getAllUsersIn');
     socket.on('allUsersIn', function(data){
         console.log('usersIn: ',data.usersIn);//return a array of objects
     });
 
-    socket.emit('getAllOldMessages');
-    socket.on('allOldMessages', function(data){
-        console.log('allMessages: ',data);//return a array of objects
-    });
 
     socket.on('newUserIn', function(data){
         console.log('another: ',data);//return a object
@@ -46,7 +60,7 @@ $(function () {
         $('#msg'+id).text(data.msg);
         dt = new Date(data.time);
         $('#time'+id).text(dt.getHours() + ":" + dt.getMinutes()+"h");
-        boxMessages = document.querySelector('#boxMessages');
+        
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 

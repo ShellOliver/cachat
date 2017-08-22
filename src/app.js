@@ -131,12 +131,12 @@ io.on('connection', async function (client) {
         client.broadcast.emit('userOut');
     });
 
-    client.on('getAllOldMessages', async () =>{
+    client.on('getOldMessages', async () =>{
         //search all messages size create date of this user
         //need to get least 100 recent messages
         //another call based on scroll get others 100 messages
         const messages = await messageController.list();
-        client.emit('allOldMessages', messages);
+        client.emit('oldMessages', await messages);
     })
 });
 

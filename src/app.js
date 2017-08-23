@@ -84,32 +84,34 @@ app.use('*', function (req, res) {
 const messageController = require('./controllers/messageController');
 const userModel = require('./models/userModel');
 const userController = require('./controllers/userController');
+var objectId = mongoose.Types.ObjectId;
 
 io.engine.generateId = (req) => {
     return (currentUser != '') ? currentUser._id : /=.+;/g.exec(req.headers.cookie)[0]; // custom id must be unique
 }
 
 io.on('connection', async function (client) {
+    var skipMessages = 0;
     var usersIn = [];
     client.on('getAllUsersIn', async function (req) {
         io.clients(async (error, clients) => {
             if (error) throw error;
             for (let i = 0; i < clients.length && currentUser._id != clients[i]; i++) {
-                try{
+                try {
                     usersIn.push(await userController.getUser(clients[i]));
-                }catch(ex){
-                    console.log("can't find user id:", client.id); 
+                } catch (ex) {
+                    console.log("can't find user id:", client.id);
                 }
             }
             client.emit('allUsersIn', { usersIn: usersIn });
         }, this);
     });
-    
-    try{
+
+    try {
         let usr = await userController.getUser(client.id);
         console.log('Client connected...', usr);
         client.broadcast.emit('newUserIn', usr);
-    }catch(ex){
+    } catch (ex) {
         console.log("can't find user id:", client.id);
     }
 
@@ -121,7 +123,7 @@ io.on('connection', async function (client) {
         req.receptor = 0;//in future a list of all client ids conected in the same room
         req.emitter = currentUser._id;
         messageController.create(req).save(function (err, m) {
-            let msgData = { 'msg': m.message, 'time': m.datetime };
+            let msgData = { 'msg': m.message, 'time': objectId(m._id).getTimestamp() };
             client.broadcast.emit('forAll', msgData);
             client.emit('forAll', msgData);
         });
@@ -131,12 +133,13 @@ io.on('connection', async function (client) {
         client.broadcast.emit('userOut');
     });
 
-    client.on('getOldMessages', async () =>{
-        //search all messages size create date of this user
-        //need to get least 100 recent messages
-        //another call based on scroll get others 100 messages
-        const messages = await messageController.list();
-        client.emit('oldMessages', await messages);
+    client.on('getOldMessages', async () => {
+        if(skipMessages != -1){
+            const messages = await messageController
+                .list(objectId(currentUser._id).getTimestamp(), skipMessages);
+            client.emit('oldMessages', await messages);
+            (messages.length == 0) ? skipMessages = -1 : skipMessages += 100;
+        }
     })
 });
 

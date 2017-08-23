@@ -10,9 +10,10 @@ module.exports = {
     /**
      * messageController.list()
      */
-    list: function () {
-        console.log('chamou no mongo');
-        return messageModel.find().limit(100);
+    list: function (gteDate,skip) {
+        return messageModel.find(
+            {"datetime" : { $gte : new Date(gteDate) }})
+            .skip(skip).limit(100);
     },
 
     /**
@@ -43,8 +44,8 @@ module.exports = {
         var message = new messageModel({
             emitter: req.emitter,
             message: req.text,
-            receptor: req.receptor,
             datetime: new Date(),
+            receptor: req.receptor,
             room: req.room
 
         });
@@ -70,7 +71,6 @@ module.exports = {
 
             message.message = req.body.message ? req.body.message : message.message;
             message.receptor = req.body.receptor ? req.body.receptor : message.receptor;
-            message.datetime = req.body.datetime ? req.body.datetime : message.datetime;
             message.room = req.body.room ? req.body.room : message.room;
 
             message.save(function (err, message) {

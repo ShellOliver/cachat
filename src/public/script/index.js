@@ -60,7 +60,6 @@ $(function () {
         $('#msg'+id).text(data.msg);
         dt = new Date(data.time);
         $('#time'+id).text(dt.getHours() + ":" + dt.getMinutes()+"h");
-        
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 

@@ -47,7 +47,7 @@ module.exports = {
     async getUser(id){
         let usr = await userModel.findOne({ _id: id }, function (err, user) { });
         if (usr) {
-            usr.email = undefined; usr.password = undefined; usr.__v = undefined;
+            usr.email=usr.password=usr.__v = undefined;
             return usr;
         }
         return null;

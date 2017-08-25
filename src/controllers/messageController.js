@@ -1,4 +1,4 @@
-var messageModel = require('../models/messageModel.js');
+import messageModel from '../models/messageModel';
 
 /**
  * messageController.js
@@ -12,7 +12,9 @@ module.exports = {
      */
     list: function (gteDate,skip) {
         return messageModel.find(
-            {"datetime" : { $gte : new Date(gteDate) }})
+            // {"datetime" : { $gte : gteDate }})
+             {"datetime" : { $gte : new Date(gteDate)}})
+            .sort({datetime: 1})
             .skip(skip).limit(100);
     },
 
@@ -41,13 +43,12 @@ module.exports = {
      * messageController.create()
      */
     create: function (req) {
+        // console.log('msg data: ',new Date());
         var message = new messageModel({
             emitter: req.emitter,
             message: req.text,
-            datetime: new Date(),
             receptor: req.receptor,
             room: req.room
-
         });
         return message
     },

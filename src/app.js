@@ -120,17 +120,18 @@ io.on('connection', async function (client) {
         if (req.text.trim() == '') {
             return;
         }
+        let emitter = currentUser;
+        emitter.password=emitter.__v=emitter.email = undefined;
         req.receptor = 0;//in future a list of all client ids conected in the same room
-        req.emitter = currentUser._id;
+        req.emitter = emitter;//when user use id of other user, it has to be checked at backend
         messageController.create(req).save(function (err, m) {
-            let msgData = { 'msg': m.message, 'time': objectId(m._id).getTimestamp() };
-            client.broadcast.emit('forAll', msgData);
-            client.emit('forAll', msgData);
+            client.broadcast.emit('forAll', m);
+            client.emit('forAll', m);
         });
     });
 
     client.on('disconnect', (reason) => {
-        client.broadcast.emit('userOut');
+        client.broadcast.emit('userOut', reason);
     });
 
     client.on('getOldMessages', async () => {

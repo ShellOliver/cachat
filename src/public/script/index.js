@@ -6,7 +6,7 @@ function addMessage(id) {
                     </a>
                     <div class="media-body">
                         <small id="time`+id+`" class="pull-right time"><i class="fa fa-clock-o"></i></small>
-                            <h5 class="media-heading">Some one</h5>
+                            <h5 id="`+id+`user" class="media-heading"></h5>
 
                             <pre id="msg`+id+`" class="col-lg-10"></pre>
                         </div>
@@ -57,8 +57,9 @@ $(function () {
     socket.on('forAll', function (data) {
         id++;
         addMessage(id);
-        $('#msg'+id).text(data.msg);
-        dt = new Date(data.time);
+        $('#msg'+id).text(data.message);
+        $('#'+id+'user').text(data.emitter.name);
+        dt = new Date();
         $('#time'+id).text(dt.getHours() + ":" + dt.getMinutes()+"h");
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });

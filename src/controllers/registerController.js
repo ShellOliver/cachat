@@ -11,7 +11,7 @@ router.post('/',function (req, res) {
             error: ''
         }
         req.body.password = bcrypt.hashSync(req.body.password, 12);
-        req.body.datetime = new Date();
+        req.body._id = undefined;
         var user = new userModel(req.body);
         userModel.findOne({ email: req.body.email }, function (err, usrFound) {
             if (usrFound) {

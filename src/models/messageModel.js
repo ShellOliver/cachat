@@ -1,11 +1,13 @@
-var mongoose = require('mongoose');
-var Schema   = mongoose.Schema;
+import mongoose from 'mongoose';
+import userModel from './userModel';
+const Schema = mongoose.Schema;
 
-var messageSchema = new Schema({
+const messageSchema = new Schema({
 	'message' : String,
 	'receptor' : Number,
-	'datetime' : String,
+	'emitter' : userModel.schema,
+	'datetime' : {type: Date, default: Date.now},
 	'room' : String
 });
 
-module.exports = mongoose.model('message', messageSchema);
+export default mongoose.model('message', messageSchema);

@@ -1,66 +1,38 @@
 <link href="/files/public/style/index.css" rel="stylesheet">
 <script src="/files/socket/socket.io.js"></script>
 <script src="/files/public/script/index.js"></script>
-<div class="container">
-    <div class="row">
-        <div class="col-lg-3">
-            <div class="btn-panel btn-panel-conversation">
-                <input type="text"><i class="fa fa-search"></i>
-            </div>
+
+<div class="main-container">
+    <input id="search-bar" placeholder="search" type="text" />
+    <header id="title-room">
+        <h5>Room x</h5>
+    </header>
+    <nav id="list-users">
+        <ul>
+            <li class="user-item">User a</li>
+            <li class="user-item">User b</li>
+            <li class="user-item">User c</li>
+            <li class="user-item">User d</li>
+        </ul>
+    </nav>
+    <section id="messages">
+        <div class="msg-item">
+            <b>User a</b>
+            <pre class="msg-text">ggggg ggggggggggg gggdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddgggg gggggggggo asdagasd1</pre>
         </div>
-
-        <div class="col-lg-offset-1 col-lg-7">
-            <div class="btn-panel btn-panel-msg">
-
-                <a href="" class="btn  col-lg-3  send-message-btn pull-right" role="button"><i class="fa fa-gears"></i> Settings</a>
-            </div>
+        <div class="msg-item">
+            <b>User b</b>
+            <pre class="msg-text">conteudo asdaga asdas asdfasd2</pre>
         </div>
-    </div>
-    <div class="row">
-
-        <div class="conversation-wrap col-lg-2 col-ms-1">
-
-            <div class="media conversation">
-                <a class="pull-left" href="#">
-                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 50px; height: 50px;" src="">
-                </a>
-                <div class="media-body">
-                    <small class="media-heading">Hello</small>
-                </div>
-                
-            </div>
-            <div class="media conversation">
-                <a class="pull-left" href="#">
-                    <img class="media-object" data-src="holder.js/64x64" alt="64x64" style="width: 50px; height: 50px;" src="">
-                </a>
-                <div class="media-body">
-                    <h5 class="media-heading">Some one..</h5>
-                    <small>Hello</small>
-                </div>
-                
-            </div>
-
+        <div class="msg-item mine">
+            <b>User c</b>
+            <pre class="msg-text">conteudo asdagasd3</pre>
         </div>
-
-        <div class="message-wrap col-lg-8">
-            <div id="boxMessages" class="msg-wrap">
-                <div class="alert msg-date">
-                    <strong>Today</strong>
-                </div>
-
-                <ul id="messages">
-                </ul>
-            </div>
-
-            <div class="send-wrap ">
-                <form id='editor'>
-                    <textarea maxlength="2000" id="m" class="form-control send-message" rows="3"></textarea>
-                </form>
-
-            </div>
-            <div class="btn-panel">
-                <a href="" class=" col-lg-3 btn   send-message-btn " role="button"><i class="fa fa-cloud-upload"></i> Add Files</a>
-            </div>
-        </div>
+    </section>
+    <form id='editor'>
+        <textarea name="" id="msg-text" cols="30" rows="3"></textarea>
+    </form>
+    <div class="btn-panel">
+        <a href="" class="send-message-btn " role="button"><i class="fa fa-cloud-upload"></i> Add Files</a>
     </div>
 </div>

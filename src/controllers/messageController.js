@@ -14,7 +14,7 @@ module.exports = {
         return messageModel.find(
             // {"datetime" : { $gte : gteDate }})
              {"datetime" : { $gte : new Date(gteDate)}})
-            .sort({datetime: 1})
+            .sort({datetime: -1})
             .skip(skip).limit(100);
     },
 

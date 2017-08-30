@@ -1,13 +1,9 @@
 
-function addMessage(id) {
-    $('#messages').append(`
-    <div class="msg-item">
-    <b id="`+id+`user">User b</b><small id="time`+id+`" class="pull-right time"><i class="fa fa-clock-o"></i></small>
-    <pre id="msg`+id+`" class="msg-text">conteudo asdaga asdas asdfasd2</pre>
-  </div>`);
+function addUserInList(user){
+    $('#list-user-item').append(`<li class="user-item">`+user.name+`</li>`);
 }
 $(function () {
-    var id = 0;
+    var idMsg = 0;
     var socket = io.connect();
     var shift = false;
     var boxMessages = document.querySelector('#messages');
@@ -22,6 +18,26 @@ $(function () {
         }
     });
 
+    function addTemplateMessage(initial = false) {
+        idMsg++;
+        template = `
+        <div id="msg`+idMsg+`" class="msg-item">
+        <b id="`+idMsg+`user">User b</b><small id="time`+idMsg+`" class="pull-right time"><i class="fa fa-clock-o"></i></small>
+        <div id="msg-text`+idMsg+`" class="msg-text"></div>
+      </div>`;
+        initial ? $('#messages').append(template) : $('#messages').prepend(template);
+    }
+
+    function addMessage(data, initial = false){
+        addTemplateMessage(initial);
+        $('#msg-text'+idMsg).text(data.message);
+        //data.emitter._id == 
+        //mine ? $('#msg'+idMsg).addClass('mine') : $('#msg'+idMsg).removeClass('mine');
+        $('#'+idMsg+'user').text(data.emitter.name);
+        dt = new Date(data.datetime);
+        $('#time'+idMsg).text(dt.getHours() + ":" + dt.getMinutes()+"h");
+    }
+
     function getMessages(){
         socket.emit('getOldMessages');
     }
@@ -35,31 +51,27 @@ $(function () {
     }
     
     socket.on('oldMessages', function(data){
-        console.log('Messages: ',data);//return a array of objects
+        data.forEach(function(msg) {
+            addMessage(msg, true);
+        }, this);
     });
 
     socket.emit('getAllUsersIn');
     socket.on('allUsersIn', function(data){
-        console.log('usersIn: ',data.usersIn);//return a array of objects
+        data.usersIn.forEach(function(user) {
+            addUserInList(user);
+        }, this);
     });
 
-
     socket.on('newUserIn', function(data){
-        console.log('another: ',data);//return a object
     });
 
     socket.on('forAll', function (data) {
-        id++;
-        addMessage(id);
-        $('#msg'+id).text(data.message);
-        $('#'+id+'user').text(data.emitter.name);
-        dt = new Date();
-        $('#time'+id).text(dt.getHours() + ":" + dt.getMinutes()+"h");
+        addMessage(data);
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 
     socket.on('userEnter', function (data) {
-        console.log(data);
         $('#messages').append(`<div class="alert msg-date">
                     <strong>`+data.user.name+` is with us...</strong>
                 </div>`);

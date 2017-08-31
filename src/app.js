@@ -93,6 +93,7 @@ io.engine.generateId = (req) => {
 io.on('connection', async function (client) {
     var skipMessages = 0;
     var usersIn = [];
+    var currentSessionUser = new Object();
     client.on('getAllUsersIn', async function (req) {
         io.clients(async (error, clients) => {
             if (error) throw error;
@@ -103,24 +104,26 @@ io.on('connection', async function (client) {
                     console.log("can't find user id:", client.id);
                 }
             }
-            client.emit('allUsersIn', { usersIn: usersIn });
+            let currentUsrFront = currentUser;
+            currentUsrFront.__v = currentUsrFront.email = undefined;
+            client.emit('allUsersIn', { usersIn: usersIn, currentUsr: currentUsrFront});
         }, this);
     });
 
     try {
-        let usr = await userController.getUser(client.id);
-        console.log('Client connected...', usr);
-        client.broadcast.emit('newUserIn', usr);
+        currentSessionUser = await userController.getUser(client.id);
+        console.log('Client connected...', currentSessionUser);
+        client.broadcast.emit('newUserIn', currentSessionUser);
     } catch (ex) {
         console.log("can't find user id:", client.id);
     }
 
-    client.on('sendForAll', (req) => {
+    client.on('sendForAll',async (req) => {
         //save message here
         if (req.text.trim() == '') {
             return;
         }
-        let emitter = currentUser;
+        let emitter = currentSessionUser;
         emitter.password=emitter.__v=emitter.email = undefined;
         req.receptor = 0;//in future a list of all client ids conected in the same room
         req.emitter = emitter;//when user use id of other user, it has to be checked at backend

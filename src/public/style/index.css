@@ -71,10 +71,6 @@
     margin-top: .3em;
   }
   
-  .msg-item b{
-    
-  }
-  
   .mine{
     background-color: #fce4b5;
   }
@@ -100,9 +96,14 @@
   .msg-text{
     margin: .2em 0 .3em 0;
     padding-left:5px;
-
   }
   
+  .msg-notification{
+    height: fit-content;
+    text-align: center;
+    color: #D3D3D3;
+    border: 1px solid lightgray;
+  }
 
   
   div.msg-text{

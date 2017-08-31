@@ -7,6 +7,11 @@ $(function () {
     var socket = io.connect();
     var shift = false;
     var boxMessages = document.querySelector('#messages');
+    const eventType = {
+        USERIN: 0,
+        USEROUT: 1,
+        NEWDAY: 2
+    }
 
     $('#editor').keydown(function (event) { if (event.which == 16) shift = true });
     $('#editor').keyup(function (event) { if (event.which == 16) shift = false });
@@ -17,6 +22,25 @@ $(function () {
             return false;
         }
     });
+
+    function addEvent(key, event){
+        $('#messages').append(`<div class="msg-notification">
+        <strong>`+newUser.name+` is with us...</strong>
+    </div>`);
+        switch (event.type) {
+            case eventType.USERIN:
+
+            break;
+            case eventType.USEROUT:
+
+            break;
+            case eventType.NEWDAY:
+            
+            break;
+            default:
+                break;
+        }
+    }
 
     function addTemplateMessage(initial = false) {
         idMsg++;
@@ -31,8 +55,8 @@ $(function () {
     function addMessage(data, initial = false){
         addTemplateMessage(initial);
         $('#msg-text'+idMsg).text(data.message);
-        //data.emitter._id == 
-        //mine ? $('#msg'+idMsg).addClass('mine') : $('#msg'+idMsg).removeClass('mine');
+        JSON.parse(sessionStorage.currentUsr)._id == data.emitter._id
+            ? $('#msg'+idMsg).addClass('mine') : $('#msg'+idMsg).removeClass('mine');
         $('#'+idMsg+'user').text(data.emitter.name);
         dt = new Date(data.datetime);
         $('#time'+idMsg).text(dt.getHours() + ":" + dt.getMinutes()+"h");
@@ -58,12 +82,19 @@ $(function () {
 
     socket.emit('getAllUsersIn');
     socket.on('allUsersIn', function(data){
+        sessionStorage.clear();
         data.usersIn.forEach(function(user) {
             addUserInList(user);
         }, this);
+        sessionStorage.setItem('currentUsr',JSON.stringify(data.currentUsr));
     });
 
-    socket.on('newUserIn', function(data){
+    socket.on('newUserIn', function(newUser){
+        addUserInList(newUser);
+        addEvent(eventType.USERIN);//will be replaced by this
+        $('#messages').append(`<div class="msg-notification">
+            <strong>`+newUser.name+` is with us...</strong>
+        </div>`);
     });
 
     socket.on('forAll', function (data) {
@@ -71,14 +102,8 @@ $(function () {
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 
-    socket.on('userEnter', function (data) {
-        $('#messages').append(`<div class="alert msg-date">
-                    <strong>`+data.user.name+` is with us...</strong>
-                </div>`);
-    });
-
     socket.on('userOut', function () {
-        $('#messages').append(`<div class="alert msg-date">
+        $('#messages').append(`<div class="msg-notification">
                     <strong>Some one is not between us..</strong>
                 </div>`);
     });

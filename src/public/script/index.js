@@ -7,11 +7,11 @@ $(function () {
     var socket = io.connect();
     var shift = false;
     var boxMessages = document.querySelector('#messages');
-    const eventType = {
+    const eventType = Object.freeze({
         USERIN: 0,
         USEROUT: 1,
         NEWDAY: 2
-    }
+    });
 
     $('#editor').keydown(function (event) { if (event.which == 16) shift = true });
     $('#editor').keyup(function (event) { if (event.which == 16) shift = false });
@@ -24,12 +24,10 @@ $(function () {
     });
 
     function addEvent(key, event){
-        $('#messages').append(`<div class="msg-notification">
-        <strong>`+newUser.name+` is with us...</strong>
-    </div>`);
-        switch (event.type) {
+    
+        switch (event) {
             case eventType.USERIN:
-
+            
             break;
             case eventType.USEROUT:
 
@@ -107,5 +105,10 @@ $(function () {
                     <strong>Some one is not between us..</strong>
                 </div>`);
     });
+
+    window.onbeforeunload = function (event) {
+        
+        addEvent(0, eventType.USEROUT);
+    };
 
 });

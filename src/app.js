@@ -73,7 +73,7 @@ app.get('/chat', function (req, res, next) {
 
 app.use('/user', userRoutes);
 
-app.get('/sair', function (req, res) {
+app.get('/out', function (req, res) {
     req.session.destroy(function (err) { });
 });
 

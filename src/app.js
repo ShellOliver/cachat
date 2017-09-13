@@ -81,9 +81,11 @@ app.use('*', function (req, res) {
     return res.redirect('/login');
 });
 
-const messageController = require('./controllers/messageController');
-const userModel = require('./models/userModel');
-const userController = require('./controllers/userController');
+import messageController from './controllers/messageController';
+import userModel from './models/userModel';
+const userController  = require('./controllers/userController');
+import tempUserRoomController from './controllers/TempUserRoomController';
+
 var objectId = mongoose.Types.ObjectId;
 
 io.engine.generateId = (req) => {
@@ -113,16 +115,19 @@ io.on('connection', async function (client) {
     try {
         currentSessionUser = await userController.getUser(client.id);
         console.log('Client connected...', currentSessionUser);
+        //if user at this room dont add on list and dont send event newUserIn
+        //userAtRoom = tempUserRoomController.show(currentSessionUser, 0);
+        tempUserRoomController.create(currentSessionUser, 0);
         client.broadcast.emit('newUserIn', currentSessionUser);
+        //
     } catch (ex) {
         console.log("can't find user id:", client.id);
     }
 
     client.on('sendForAll',async (req) => {
         //save message here
-        if (req.text.trim() == '') {
-            return;
-        }
+        if (req.text.trim() == '') return;
+
         let emitter = currentSessionUser;
         emitter.password=emitter.__v=emitter.email = undefined;
         req.receptor = 0;//in future a list of all client ids conected in the same room
@@ -134,6 +139,7 @@ io.on('connection', async function (client) {
     });
 
     client.on('disconnect', (reason) => {
+        // tempUserRoomController.removeuserFromRoom();
         client.broadcast.emit('userOut', reason);
     });
 

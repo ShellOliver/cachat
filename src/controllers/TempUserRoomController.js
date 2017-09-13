@@ -1,4 +1,4 @@
-var TempUserRoomModel = require('../models/TempUserRoomModel.js');
+import TempUserRoomModel from '../models/TempUserRoomModel';
 
 /**
  * TempUserRoomController.js
@@ -46,11 +46,10 @@ module.exports = {
     /**
      * TempUserRoomController.create()
      */
-    create: function (req, res) {
-        var TempUserRoom = new TempUserRoomModel({
-			user : req.body.user,
-			room : req.body.room
-
+    create: function (user, room) {
+        const TempUserRoom = new TempUserRoomModel({
+			user : user,
+			room : room
         });
 
         TempUserRoom.save(function (err, TempUserRoom) {
@@ -103,6 +102,18 @@ module.exports = {
      */
     remove: function (req, res) {
         var id = req.params.id;
+        TempUserRoomModel.findByIdAndRemove(id, function (err, TempUserRoom) {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Error when deleting the TempUserRoom.',
+                    error: err
+                });
+            }
+            return res.status(204).json();
+        });
+    },
+
+    removeuserFromRoom: function (user, room) {//to implement correctly
         TempUserRoomModel.findByIdAndRemove(id, function (err, TempUserRoom) {
             if (err) {
                 return res.status(500).json({

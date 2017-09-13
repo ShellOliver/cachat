@@ -53,7 +53,7 @@ $(function () {
     function addMessage(data, initial = false){
         addTemplateMessage(initial);
         $('#msg-text'+idMsg).text(data.message);
-        JSON.parse(sessionStorage.currentUsr)._id == data.emitter._id
+        sessionStorage.currentUsr && (JSON.parse(sessionStorage.currentUsr)._id == data.emitter._id)
             ? $('#msg'+idMsg).addClass('mine') : $('#msg'+idMsg).removeClass('mine');
         $('#'+idMsg+'user').text(data.emitter.name);
         dt = new Date(data.datetime);

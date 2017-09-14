@@ -118,10 +118,7 @@ io.on('connection', async function (client) {
         console.log('Client connected...', currentSessionUser);
         //if user at this room dont add on list and dont send event newUserIn
         let userAtRoom = await tempUserRoomController.userExistAtRoom(currentSessionUser, 0);
-        if(!userAtRoom){
-            tempUserRoomController.create(currentSessionUser, 0);
-            client.broadcast.emit('newUserIn', currentSessionUser);
-        }
+        whenUserAtRoom(userAtRoom, currentSessionUser, client);
         //
     } catch (ex) {
         console.log("can't find user id:", client.id);
@@ -159,5 +156,12 @@ io.on('connection', async function (client) {
         }
     })
 });
+
+function whenUserAtRoom(userAtRoom, currentSessionUser, client) {
+    if(!userAtRoom) {
+        tempUserRoomController.create(currentSessionUser, 0);
+        client.broadcast.emit('newUserIn', currentSessionUser);
+    }
+}
 
 server.listen(5002);

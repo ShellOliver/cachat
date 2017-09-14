@@ -1,4 +1,5 @@
 import TempUserRoomModel from '../models/TempUserRoomModel';
+import "babel-polyfill";
 
 /**
  * TempUserRoomController.js
@@ -27,7 +28,7 @@ module.exports = {
      */
     async userExistAtRoom(user, room) {
         let userAtRoom = await TempUserRoomModel.findOne({user: user, room:room});
-            return userAtRoom ? true : false;
+            return userAtRoom;
     },
 
     /**
@@ -46,7 +47,7 @@ module.exports = {
                     error: err
                 });
             }
-            return res.status(201).json(TempUserRoom);
+            return TempUserRoom;
         });
     },
 

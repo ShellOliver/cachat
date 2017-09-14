@@ -25,22 +25,9 @@ module.exports = {
     /**
      * TempUserRoomController.show()
      */
-    show: function (req, res) {
-        var id = req.params.id;
-        TempUserRoomModel.findOne({_id: id}, function (err, TempUserRoom) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting TempUserRoom.',
-                    error: err
-                });
-            }
-            if (!TempUserRoom) {
-                return res.status(404).json({
-                    message: 'No such TempUserRoom'
-                });
-            }
-            return res.json(TempUserRoom);
-        });
+    async userExistAtRoom(user, room) {
+        let userAtRoom = await TempUserRoomModel.findOne({user: user, room:room});
+            return userAtRoom ? true : false;
     },
 
     /**

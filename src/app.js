@@ -96,6 +96,7 @@ io.on('connection', async function (client) {
     var skipMessages = 0;
     var usersIn = [];
     var currentSessionUser = new Object();
+
     client.on('getAllUsersIn', async function (req) {
         io.clients(async (error, clients) => {
             if (error) throw error;
@@ -116,9 +117,11 @@ io.on('connection', async function (client) {
         currentSessionUser = await userController.getUser(client.id);
         console.log('Client connected...', currentSessionUser);
         //if user at this room dont add on list and dont send event newUserIn
-        //userAtRoom = tempUserRoomController.show(currentSessionUser, 0);
-        tempUserRoomController.create(currentSessionUser, 0);
-        client.broadcast.emit('newUserIn', currentSessionUser);
+        let userAtRoom = await tempUserRoomController.userExistAtRoom(currentSessionUser, 0);
+        if(!userAtRoom){
+            tempUserRoomController.create(currentSessionUser, 0);
+            client.broadcast.emit('newUserIn', currentSessionUser);
+        }
         //
     } catch (ex) {
         console.log("can't find user id:", client.id);
@@ -143,10 +146,14 @@ io.on('connection', async function (client) {
         client.broadcast.emit('userOut', reason);
     });
 
+    /**
+     * Every time a client is connected, need get old messages since sign in date
+     */
     client.on('getOldMessages', async () => {
         if(skipMessages != -1){
-            const messages = await messageController
-                .list(objectId(currentUser._id).getTimestamp(), skipMessages);
+            const messages = await messageController.list(
+                objectId(currentUser._id).getTimestamp(), skipMessages
+            );
             client.emit('oldMessages', await messages);
             (messages.length == 0) ? skipMessages = -1 : skipMessages += 100;
         }

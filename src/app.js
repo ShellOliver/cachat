@@ -77,6 +77,10 @@ app.get('/out', function (req, res) {
     req.session.destroy(function (err) { });
 });
 
+app.get('/teste', function (req, res) {
+    
+});
+
 app.use('*', function (req, res) {
     return res.redirect('/login');
 });
@@ -128,19 +132,17 @@ io.on('connection', async function (client) {
         //save message here
         if (req.text.trim() == '') return;
 
-        let emitter = currentSessionUser;
-        emitter.password=emitter.__v=emitter.email = undefined;
         req.receptor = 0;//in future a list of all client ids conected in the same room
-        req.emitter = emitter;//when user use id of other user, it has to be checked at backend
-        messageController.create(req).save(function (err, m) {
+        req.emitter = cleanUser(currentSessionUser);//when user use id of other user, it has to be checked at backend
+        messageController.create(req).save((err, m) => {
             client.broadcast.emit('forAll', m);
             client.emit('forAll', m);
         });
     });
 
-    client.on('disconnect', (reason) => {
-        // tempUserRoomController.removeuserFromRoom();
-        client.broadcast.emit('userOut', reason);
+    client.on('disconnect', async (reason) => {
+        let msg = await tempUserRoomController.removeUserFromRoom(currentSessionUser,0);
+        client.broadcast.emit('userOut', msg);
     });
 
     /**
@@ -162,6 +164,10 @@ function whenUserAtRoom(userAtRoom, currentSessionUser, client) {
         tempUserRoomController.create(currentSessionUser, 0);
         client.broadcast.emit('newUserIn', currentSessionUser);
     }
+}
+
+function cleanUser(user){
+    return user.password=user.__v=user.email = undefined;
 }
 
 server.listen(5002);

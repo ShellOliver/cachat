@@ -101,15 +101,16 @@ module.exports = {
         });
     },
 
-    removeuserFromRoom: function (user, room) {//to implement correctly
-        TempUserRoomModel.findByIdAndRemove(id, function (err, TempUserRoom) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the TempUserRoom.',
-                    error: err
-                });
-            }
-            return res.status(204).json();
+    removeUserFromRoom: async function (user, room) {//to implement correctly
+        let _user = await TempUserRoomModel.find({user: user, room:room});
+        // console.log('was looking for:', user,'at room:',room,'user finded:', _user);
+        _user.map((val) => {
+            val.remove().then(function (usr) {
+               return true;
+             }).catch(function (err) {
+                return false;
+             })
+
         });
     }
 };

@@ -100,9 +100,9 @@ $(function () {
         boxMessages.scrollTop = boxMessages.scrollHeight;
     });
 
-    socket.on('userOut', function () {
+    socket.on('userOut', function (msg) {
         $('#messages').append(`<div class="msg-notification">
-                    <strong>Some one is not between us..</strong>
+                    <strong>Some one is not between us..${msg}</strong>
                 </div>`);
     });
 
